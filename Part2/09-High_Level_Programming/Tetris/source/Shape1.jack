@@ -1,0 +1,397 @@
+//    __  
+//   |a_|  
+//   |b_|  
+//   |c_|  
+//   |d_|  
+
+
+class Shape1 {
+
+    static Tetris instance;
+    static Shape1 shape;
+    field int counter, size, position, leftWall, rightWall, bottom, rows, wait;
+    field Square a, b, c, d, center;
+
+    /** Constructs a new figure of class Shape1 with the given parameters. */
+    constructor Shape1 new(int left, int right, int squareSize, bool outline, int x0, int floor, int w) {
+        let instance = Tetris.getInstance();
+        let size = squareSize;
+        let leftWall = left;
+        let rightWall = right - size + 1;
+        let position = 0;
+        let wait = w;
+        let bottom = floor;
+        let rows = bottom / size;
+        let a = Square.new(x0, 0, size, leftWall, outline);
+        let b = Square.new(x0, size, size, leftWall, outline);
+        let c = Square.new(x0, size + size, size, leftWall, outline);
+        let d = Square.new(x0, size + size + size, size, leftWall, outline);
+        let center = b;
+
+        return this;
+    }
+
+    /** Constructs a new figure of class Shape1 and stores it. If the playes lost returns 2, else call move() method.*/
+    function int start(int leftWall, int rightWall, int size, bool outline, int x0, int bottom, int wait) {
+        var int key;
+        let shape = Shape1.new(leftWall, rightWall, size, outline, x0, bottom, wait);
+        if (shape.checkLose() = 1) {
+            return 2;
+        }
+        let key = shape.move();
+        do shape.dispose();
+        return key;
+    }
+
+    /** Handles input from the user that controls the figure.
+    Starts moving the figure down until it reaches the bottom of the screen or the top of another figure. */ 
+    method int move() {
+        var int key, i;
+        while (1 = 1) {
+            let i = 0;
+            while (i < 2) {
+                let key = Keyboard.keyPressed();
+                if (key = 132) {
+                    do moveRight();
+                    do Sys.wait(100);
+                }
+                if (key = 130) {
+                        do moveLeft();
+                        do Sys.wait(100);
+                }
+                if (key = 131) {
+                        do rotate();
+                        do Sys.wait(100);
+                }
+                if (key = 133) {
+                    while ((Keyboard.keyPressed() = 133) & (moveDown() = 0)) {
+                        do Sys.wait(7);
+                    }
+                }
+                if (key = 32) {
+                    while (moveDown() = 0) {
+                    }
+                    while (~(Keyboard.keyPressed() = 0)) {
+                    }
+                }
+                let i = i + 1;
+            }     
+
+            if (moveDown() = 1) {
+                while ((i < 20) & ((Keyboard.keyPressed() = 130) | (Keyboard.keyPressed() = 131) | (Keyboard.keyPressed() = 132))) {
+                    if (Keyboard.keyPressed() = 132) {
+                        do moveRight();
+                        do Sys.wait(100);
+                    }
+                    if (Keyboard.keyPressed() = 130) {
+                            do moveLeft();
+                            do Sys.wait(100);
+                    }
+                    if (Keyboard.keyPressed() = 131) {
+                            do rotate();
+                            do Sys.wait(100);
+                    }
+                    let i = i + 1;
+                }
+            
+                if (moveDown() = 1) {
+                    do instance.addSquare(a.getColumn(), a.getRow());
+                    do instance.addSquare(b.getColumn(), b.getRow());
+                    do instance.addSquare(c.getColumn(), c.getRow());
+                    do instance.addSquare(d.getColumn(), d.getRow());
+
+                    do instance.linesDown(a.getRow(), b.getRow(), c.getRow(), d.getRow());
+
+                    return 1;
+                }
+            }
+
+            do Sys.wait(wait);
+
+        }
+        
+        return 0;
+    }
+
+    /** Moves right by one square if there is no obstacle */
+    method void moveRight() {
+        var int address;
+        if ((a.getX() = rightWall) | (b.getX() = rightWall) | (c.getX() = rightWall) | (d.getX() = rightWall)) {
+            return;
+        }
+        if ((position = 1) | (position = 3)) {
+            if (position = 1) {
+                if (instance.getRight(a.getColumn(), a.getRow(), 1, 0, counter) = 1) {
+                    return;
+                }
+            }
+            else {
+                if (instance.getRight(d.getColumn(), d.getRow(), 1, 0, counter) = 1) {
+                    return;
+                }            
+            }
+        }
+        else {
+            if (position = 0) {
+                if (instance.getRight(a.getColumn(), a.getRow(), 4, 0, counter) = 1) {
+                    return;
+                }
+            }
+            else {
+                if (instance.getRight(d.getColumn(), d.getRow(), 4, 0, counter) = 1) {
+                    return;
+                }            
+            }
+        }
+
+        do a.erase();
+        do b.erase();
+        do c.erase();
+        do d.erase();
+
+        do a.setLoc(a.getX() + size, a.getY());
+        do b.setLoc(b.getX() + size, b.getY());
+        do c.setLoc(c.getX() + size, c.getY());
+        do d.setLoc(d.getX() + size, d.getY());
+
+        do a.draw();
+        do b.draw();
+        do c.draw();
+        do d.draw();
+
+        do a.updateColumn(1);
+        do b.updateColumn(1);
+        do c.updateColumn(1);
+        do d.updateColumn(1);   
+
+        return;
+    }
+
+    /** Moves left by one square if there is no obstacle */
+    method void moveLeft() {
+        if ((a.getX() = leftWall) | (b.getX() = leftWall) | (c.getX() = leftWall) | (d.getX() = leftWall)) {
+            return;
+        }
+        if ((position = 1) | (position = 3)) {
+            if (position = 1) {
+                if (instance.getLeft(d.getColumn(), d.getRow(), 1, 0, counter) = 1) {
+                    return;
+                }
+            }
+            else {
+                if (instance.getLeft(a.getColumn(), a.getRow(), 1, 0, counter) = 1) {
+                    return;
+                }            
+            }
+        }
+        else {
+            if (position = 0) {
+                if (instance.getLeft(a.getColumn(), a.getRow(), 4, 0, counter) = 1) {
+                    return;
+                }
+            }
+            else {
+                if (instance.getLeft(d.getColumn(), d.getRow(), 4, 0, counter) = 1) {
+                    return;
+                }            
+            }
+        }
+
+        do a.erase();
+        do b.erase();
+        do c.erase();
+        do d.erase();
+
+        do a.setLoc(a.getX() - size, a.getY());
+        do b.setLoc(b.getX() - size, b.getY());
+        do c.setLoc(c.getX() - size, c.getY());
+        do d.setLoc(d.getX() - size, d.getY());
+
+        do a.draw();
+        do b.draw();
+        do c.draw();
+        do d.draw();
+
+        do a.updateColumn(-1);
+        do b.updateColumn(-1);
+        do c.updateColumn(-1);
+        do d.updateColumn(-1);
+
+        return;
+    }
+
+    /** Moves down by 2 pixels if there is no obstacle, else returns 1. */
+    method int moveDown() {
+        var int address;
+        if ((a.getY() = bottom) | (b.getY() = bottom) | (c.getY() = bottom) | (d.getY() = bottom)) {
+            return 1;
+        }
+        if ((position = 1) | (position = 3)) {
+            if (position = 1) {
+                if (instance.getDown(d.getColumn(), d.getRow(), 4, 0) = 1) {
+                    return 1;
+                }
+            }
+            else {
+                if (instance.getDown(a.getColumn(), a.getRow(), 4, 0) = 1) {
+                    return 1;
+                }            
+            }
+        }
+        else {
+            if (position = 0) {
+                if (instance.getDown(d.getColumn(), d.getRow(), 1, 0) = 1) {
+                    return 1;
+                }
+            }
+            else {
+                if (instance.getDown(a.getColumn(), a.getRow(), 1, 0) = 1) {
+                    return 1;
+                }            
+            }
+        }
+
+        do a.erase();
+        do b.erase();
+        do c.erase();
+        do d.erase();
+
+        do a.setLoc(a.getX(), a.getY() + 2);
+        do b.setLoc(b.getX(), b.getY() + 2);
+        do c.setLoc(c.getX(), c.getY() + 2);
+        do d.setLoc(d.getX(), d.getY() + 2);
+
+        do a.draw();
+        do b.draw();
+        do c.draw();
+        do d.draw();
+
+        if (counter = (size - 2)) {
+            do a.updateRow(1);
+            do b.updateRow(1);
+            do c.updateRow(1);
+            do d.updateRow(1);
+            let counter = 0;
+        }
+        else {
+            let counter = counter + 2;
+
+        }
+        return 0; 
+    }
+
+    /** Deallocates the object's memory. */
+    method void dispose() {
+        do a.dispose();
+        do b.dispose();
+        do c.dispose();
+        do d.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Rotates the shape in clockwise direction if there is no obstacle. 
+    Changes center so it alternates between rotating around b and rotating around c. */
+    method void rotate() {
+        var int ax, ay, bx, by, cx, cy, dx, dy;
+
+        let ax = center.getColumn() - (a.getRow() - center.getRow());
+        let ay = center.getRow() + (a.getColumn() - center.getColumn());
+        let bx = center.getColumn() - (b.getRow() - center.getRow());
+        let by = center.getRow() + (b.getColumn() - center.getColumn());
+        let cx = center.getColumn() - (c.getRow() - center.getRow());
+        let cy = center.getRow() + (c.getColumn() - center.getColumn());
+        let dx = center.getColumn() - (d.getRow() - center.getRow());
+        let dy = center.getRow() + (d.getColumn() - center.getColumn());
+
+        if ((ax > (instance.getColumns() - 1)) | (ax < 0) | (ay > rows) | ((ay = rows) & (counter > 0)) | 
+            (bx > (instance.getColumns() - 1)) | (bx < 0) | (by > rows) | ((by = rows) & (counter > 0)) |
+            (cx > (instance.getColumns() - 1)) | (cx < 0) | (cy > rows) | ((cy = rows) & (counter > 0)) |
+            (dx > (instance.getColumns() - 1)) | (dx < 0) | (dy > rows) | ((dy = rows) & (counter > 0))) {
+            return;
+            }
+
+        if ((instance.getIndex(ax, ay) = 1) | 
+            (instance.getIndex(bx, by) = 1) |
+            (instance.getIndex(cx, cy) = 1) |
+            (instance.getIndex(dx, dy) = 1)) {
+            return;
+        }
+
+        if ( ~( ((bx = ax) & (by = (ay + 1))) | ((cx = ax) & (cy = (ay + 1))) | ((dx = ax) & (dy = (ay + 1))) ) ) {
+            if ((instance.getIndex(ax, ay + 1) = 1)) {
+                return;
+            }
+        }
+
+        if (~(((ax = bx) & (ay = (by + 1))) | ((cx = bx) & (cy = (by + 1))) | ((dx = bx) & (dy = (by + 1))))) {
+            if ((instance.getIndex(bx, by + 1) = 1)) {
+                return;
+            }
+        }
+
+        if (~(((ax = cx) & (ay = (cy + 1))) | ((bx = cx) & (by = (cy + 1))) | ((dx = cx) & (dy = (cy + 1))))) {
+            if ((instance.getIndex(cx, cy + 1) = 1)) {
+                return;
+            }
+        }
+
+        if (~(((ax = dx) & (ay = (dy + 1))) | ((bx = dx) & (by = (dy + 1))) | ((cx = ax) & (cx = (dy + 1))))) {
+            if ((instance.getIndex(dx, dy + 1) = 1)) {
+                return;
+            }
+        }
+
+        do a.erase();
+        do b.erase();
+        do c.erase();
+        do d.erase();
+
+        do a.setLoc(leftWall + (ax * size), (ay * size) + counter);
+        do b.setLoc(leftWall + (bx * size), (by * size) + counter);
+        do c.setLoc(leftWall + (cx * size), (cy * size) + counter);
+        do d.setLoc(leftWall + (dx * size), (dy * size) + counter);
+
+        do a.setColumn(ax);
+        do a.setRow(ay);
+        do b.setColumn(bx);
+        do b.setRow(by);
+        do c.setColumn(cx);
+        do c.setRow(cy);
+        do d.setColumn(dx);
+        do d.setRow(dy);
+
+        do a.draw();
+        do b.draw();
+        do c.draw();
+        do d.draw();
+
+        if (position = 3) {
+            let position = 0;
+        }
+        else {
+            let position = position + 1;
+        }
+
+        if (center = b) {
+            let center = c;
+        }
+        else {
+            let center = b;
+        }
+
+        return;
+    }
+
+    /** Returns 1 if there is already a square in any of the position of the new figure. */
+    method int checkLose() {
+        if ((instance.getIndex(a.getColumn(), a.getRow()) = 1) | 
+            (instance.getIndex(b.getColumn(), b.getRow()) = 1) |
+            (instance.getIndex(c.getColumn(), c.getRow()) = 1) |
+            (instance.getIndex(d.getColumn(), d.getRow()) = 1)) {
+            do shape.dispose();
+            return 1;
+        }
+        return 0;
+    }    
+}

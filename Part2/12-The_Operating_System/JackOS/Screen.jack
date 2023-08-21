@@ -1,0 +1,425 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * A library of functions for displaying graphics on the screen.
+ * The Hack physical screen consists of 256 rows (indexed 0..255, top to bottom)
+ * of 512 pixels each (indexed 0..511, left to right). The top left pixel on 
+ * the screen is indexed (0,0).
+ */
+class Screen {
+
+    static boolean color;
+    static int rectangle;
+
+    /** Initializes the Screen. */
+    function void init() {
+        let color = true;
+        return;
+    }
+
+    /** Erases the entire screen. */
+    function void clearScreen() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(0, 0, 511, 255);
+        do Screen.setColor(true);
+        return;
+    }
+
+    /** Sets the current color, to be used for all subsequent drawXXX commands.
+     *  Black is represented by true, white by false. */
+    function void setColor(boolean b) {
+        let color = b;
+        return;
+    }
+
+    /** Draws the (x,y) pixel, using the current color. */
+    function void drawPixel(int x, int y) {
+        var int address, value;
+        let address = 16384 + (32 * y) + (x / 16);
+        let value = Math.getBit(x - (Math.divide(x, 16) * 16));
+        if (color) {
+            let value = value | Memory.peek(address);
+        }
+        else {
+            let value = ~value & Memory.peek(address);
+        }
+        do Memory.poke(address, value);
+        return;
+    }
+
+    /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
+    function void drawLine(int x1, int y1, int x2, int y2) {
+        var int address, a, b, diff, dy, dx, value;
+        let dy = y2 - y1;
+        let dx = x2 - x1;
+        if (dx = 0) {
+            let diff = Math.abs(y1 - y2);
+            let dy = (32 * Math.min(y1, y2)) + (x1 / 16);
+            let value = Math.getBit(x1 - (Math.divide(x1, 16) * 16));
+            let address = 16384 + dy + (32 * diff);
+            while (~(diff < 0)) {
+                if (color) {
+                    let value = value | Memory.peek(address);
+                }
+                else {
+                    let value = ~value & Memory.peek(address);
+                }
+                do Memory.poke(address, value);
+                let diff = diff - 1;
+                let address = address - 32;
+            }
+            return;
+        }
+
+        if (dy = 0) {
+            if (x2 < x1) {
+                let address = 16384 + (32 * y1) + (x2 / 16);
+                let b = 16384 + (32 * y1) + (x1 / 16);
+            }
+            else {
+                let address = 16384 + (32 * y1) + (x1 / 16);
+                let b = 16384 + (32 * y1) + (x2 / 16);
+            }
+            if (address = b) {
+                let a = Math.min(x1, x2) - (Math.divide(Math.min(x1, x2), 16) * 16);
+                let b = Math.max(x2, x1) - (Math.divide(Math.max(x2, x1), 16) * 16);
+                if (a = b) {
+                    let value = Math.getBit(a);                    
+                }
+                else {
+                    if (b = 14) {
+                        let value = 32767 - (Math.getBit(a) - 1);
+                    }
+                    else {
+                        if (b = 15) {
+                            let value = -(Math.getBit(a));
+                        }
+                        else{
+                            let value = (Math.getBit(b + 1) - 1) - (Math.getBit(a) - 1);
+                        }
+                    }
+                }
+                if (color) {
+                    let value = value | Memory.peek(address);
+                }
+                else {
+                    let value = ~value & Memory.peek(address);
+                }
+                do Memory.poke(address, value);
+                if (~(rectangle = 0)) {
+                    let address = address + 32;
+                    while (rectangle > 0) {
+                        do Memory.poke(address, value);
+                        let rectangle = rectangle - 1; 
+                        let address = address + 32;
+                    }                   
+                }        
+                return;
+            }
+            let diff = b - address - 1;
+            if (color) {
+                let value = -1;
+            }
+            else {
+                let value = 0;
+            }
+            while (diff > 0) {
+                do Memory.poke(address + diff, value);
+                let diff = diff - 1;
+            }
+            if (~(rectangle = 0)) {
+                let dy = rectangle;
+                let dx = address + (dy * 32);
+                while (dy > 0) {
+                    let diff = b - address - 1;
+                    while (diff > 0) {
+                        do Memory.poke(dx + diff, value);
+                        let diff = diff - 1; 
+                    }                   
+                    let dy = dy - 1;    
+                    let dx = dx - 32;  
+                }
+            }
+
+
+            let a = Math.min(x1, x2);
+            let a = a - (Math.divide(a, 16) * 16);
+            if (a = 15) {
+                let value = Math.getBit(15);
+            }
+            else {
+                let value = -(Math.getBit(a));
+            }
+            if (color) {
+                do Memory.poke(address, value | Memory.peek(address));
+            }
+            else {
+                do Memory.poke(address, ~value & Memory.peek(address));
+            }
+            if (~(rectangle = 0)) {
+                let dy = rectangle;
+                let address = address + (dy * 32);
+                if (color) {
+                    while (dy > 0) {
+                        do Memory.poke(address, value | Memory.peek(address));
+                        let dy = dy - 1;
+                        let address = address - 32;
+                    }
+                }
+                else {
+                    while (dy > 0) {
+                        do Memory.poke(address, ~value & Memory.peek(address));
+                        let dy = dy - 1;
+                        let address = address - 32;
+                    }
+                }
+
+            }
+
+
+            let a = Math.max(x2, x1);
+            let a = a - (Math.divide(a, 16) * 16);
+            if (a = 14) {
+                let value = 32767;
+            }
+            else {
+                let value = (Math.getBit(a + 1) - 1);
+            }
+            if (color) {
+                do Memory.poke(b, value | Memory.peek(b));
+            }
+            else {
+                do Memory.poke(b, ~value & Memory.peek(b));
+            }
+            if (~(rectangle = 0)) {
+                let dy = rectangle;
+                let b = b + (dy * 32);
+                if (color) {
+                    while (dy > 0) {
+                        do Memory.poke(b, value | Memory.peek(b));
+                        let dy = dy - 1;
+                        let b = b - 32;
+                    }
+                }
+                else {
+                    while (dy > 0) {
+                        do Memory.poke(b, ~value & Memory.peek(b));
+                        let dy = dy - 1;
+                        let b = b - 32;
+                    }
+                }
+            }
+            return;
+        }
+
+        let a = 0;
+        let b = 0;
+        let diff = 0;
+        let address = 16384 + (32 * y1) + (x1 / 16);
+        let value = x1 - (Math.divide(x1, 16) * 16);
+        while ((~(Math.abs(a) > Math.abs(dx))) & (~(Math.abs(b) > Math.abs(dy)))) {
+            if (color) {
+                do Memory.poke(address, Math.getBit(value) | Memory.peek(address));
+            }
+            else {
+                do Memory.poke(address, ~Math.getBit(value) & Memory.peek(address));
+            }
+
+            if (diff < 0) {
+                let diff = diff + Math.abs(dy);
+                if (dx < 0) {
+                    let a = a - 1;
+                    if (value = 0) {
+                        let address = address - 1;
+                        let value = 15;
+                    }
+                    else {
+                        let value = value - 1;
+                    }
+                }
+                else {
+                    let a = a + 1; 
+                    if (value = (15)) {
+                        let address = address + 1;
+                        let value = 0;
+                    }
+                    else {
+                        let value = value + 1;
+                    }
+                }
+            }
+            else {
+                let diff = diff - Math.abs(dx);
+                if (dy < 0) {
+                    let b = b - 1;
+                    let address = address - 32;
+                }
+                else {
+                    let b = b + 1;
+                    let address = address + 32;
+                }
+            }
+        }
+        return;
+    }
+
+    /** Draws a filled rectangle whose top left corner is (x1, y1)
+     * and bottom right corner is (x2,y2), using the current color. */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+        var int row;
+        let row = Math.min(y1, y2);
+        let rectangle = Math.max(y2, y1) - row;
+        do Screen.drawLine(x1, row, x2, row);
+        let rectangle = 0;
+        return;
+    }
+
+    /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
+    function void drawCircle(int x, int y, int r) {
+        var int dy, y2, dx, a, a2, b, b2, v1, v2, diff, value; 
+        let dy = 1;
+        let y2 = 1;
+        let dx = r - 1;
+        let a = 16384 + (32 * (y + 1)) + ((x - r + 1) / 16);
+        let a2 = a - 64;
+        let b = 16384 + (32 * (y + 1)) + ((x + r - 1) / 16);
+        let b2 = b - 64;
+        let v1 = (x - r + 1) - (Math.divide((x - r + 1), 16) * 16);
+        let v2 = (x + r - 1) - (Math.divide((x + r - 1), 16) * 16);
+        do Screen.drawLine(x - r, y, x + r, y);
+        while (dy < r) {
+            if (a = b) {
+                if (v1 = v2) {
+                    let value = Math.getBit(v1);                    
+                }
+                else {
+                    if (b = 14) {
+                        let value = 32767 - (Math.getBit(v1) - 1);
+                    }
+                    else {
+                        if (b = 15) {
+                            let value = -(Math.getBit(v1));
+                        }
+                        else {
+                            let value = (Math.getBit(v2 + 1) - 1) - (Math.getBit(v1) - 1);
+                        }
+                    }
+                }
+                if (color) {
+                    do Memory.poke(a, value | Memory.peek(a));
+                    do Memory.poke(a2, value | Memory.peek(a2));
+                }
+                else {
+                    do Memory.poke(a, ~value & Memory.peek(a));
+                    do Memory.poke(a2, ~value & Memory.peek(a2));
+                }
+            }
+            else {
+                let diff = b - a - 1;
+                if (color) {
+                    let value = -1;
+                }
+                else {
+                    let value = 0;
+                }
+                while (diff > 0) {
+                    do Memory.poke(a + diff, value);
+                    do Memory.poke(a2 + diff, value);
+                    let diff = diff - 1;
+                }
+
+                if (v2 = 14) {
+                    let value = 32767;
+                }
+                else {
+                    let value = (Math.getBit(v2 + 1) - 1);
+                }
+                if (color) {
+                    do Memory.poke(b, value | Memory.peek(b));
+                    do Memory.poke(b2, value | Memory.peek(b2));
+                }
+                else {
+                    do Memory.poke(b, ~value & Memory.peek(b));
+                    do Memory.poke(b2, ~value & Memory.peek(b2));   
+                }
+
+                if (v1 = 15) {
+                    let value = Math.getBit(15);
+                }
+                else {
+                    let value = -(Math.getBit(v1));
+                }
+                if (color) {
+                    do Memory.poke(a, value | Memory.peek(a));
+                    do Memory.poke(a2, value | Memory.peek(a2));
+                }
+                else {
+                    do Memory.poke(a, ~value & Memory.peek(a));
+                    do Memory.poke(a2, ~value & Memory.peek(a2));            
+                }
+            }
+            
+            let y2 = y2 + dy + dy + 1;
+            let dy = dy + 1;
+            let a = a + 32;
+            let b = b + 32;
+            let a2 = a2 - 32;
+            let b2 = b2 - 32;
+            if (b > 24575) {
+                let a = a - 8160;
+                let b = b - 8160;
+            }
+            while (y2 > (dx + dx)) {
+                let y2 = y2 - (dx + dx + 1);
+                let dx = dx - 1;
+                if (v1 = 15) {
+                    let v1 = 0;
+                    let a = a + 1;
+                    let a2 = a2 + 1;
+
+                }
+                else {
+                    let v1 = v1 + 1;
+                }
+
+                if (v2 = 0){
+                    let v2 = 15;
+                    let b = b - 1;
+                    let b2 = b2 - 1;
+
+                }
+                else {
+                    let v2 = v2 -1;
+                }
+            }
+        }
+
+        if (a < a2) {
+            if ((y + r) > 211) {
+                let a2 = 16384 + (32 * (y - r)) + (x / 16);
+                let a = a2 + ((r + r - 211) * 32);
+            }
+            else {
+                let a = 16384 + (32 * (y + r)) + (x / 16);
+                let a2 = a - ((r + r - 211) * 32);
+            }
+        }
+        else {
+            let a = 16384 + (32 * (y + r)) + (x / 16);
+            let a2 = a - ((r + r) * 32);
+        }
+        let value = Math.getBit(x - (Math.divide(x, 16) * 16));
+        if (color) {
+            do Memory.poke(a, value | Memory.peek(a));
+            do Memory.poke(a2, value | Memory.peek(a2));
+        }
+        else {
+            do Memory.poke(a, ~value & Memory.peek(a));
+            do Memory.poke(a2, ~value & Memory.peek(a2));
+        }
+        return;
+    }
+}

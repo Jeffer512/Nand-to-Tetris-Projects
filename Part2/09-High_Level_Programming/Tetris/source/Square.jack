@@ -1,0 +1,106 @@
+/** Implements a graphical square. */
+class Square {
+
+   field int x, y; // screen location of the square's top-left corner
+   field int column, row; // square's location on the tetris grid
+   field int size; // length of this square, in pixels
+   field bool outline;
+
+   /** Constructs a new square with the given parameters. If b = True the square will have an outline. */
+   constructor Square new(int Ax, int Ay, int Asize, int left, bool b) {
+      let x = Ax;
+      let y = Ay;
+      let column = (Ax - left) / Asize;
+      let row = y / Asize;
+      let outline = b;
+      if (outline) {
+         let size = Asize - 2;
+      }
+
+      else {
+         let size = Asize - 1;
+      }
+
+      do draw();
+      return this;
+   }
+
+   /** Disposes this square. */
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   /** Draws the square on the screen. */
+   method void draw() {
+      do Screen.setColor(true);
+      if (outline) {
+         do Screen.drawRectangle(x + 1, y + 1, x + size, y + size);
+      }
+      else {
+         do Screen.drawRectangle(x, y, x + size, y + size);
+      }
+      return;
+   }
+
+   /** Erases the square from the screen. */
+   method void erase() {
+      do Screen.setColor(false);
+      do Screen.drawRectangle(x, y, x + size, y + size);
+      return;
+   }
+
+
+   // /** Moves the square down by 2 pixels. */
+   // method void moveDown() {
+   //    do Screen.setColor(false);
+   //    do Screen.drawRectangle(x, y, x + size, y + 1);
+   //    let y = y + 2;
+   //    do Screen.setColor(true);
+   //    do Screen.drawRectangle(x, (y + size) - 1, x + size, y + size);
+   //    return;
+   // }
+
+   method int getX() {
+      return x;
+   }
+
+   method int getY() {
+      return y;
+   }
+
+   /** Sets new (x,y) coordinates for the square. */
+   method void setLoc(int newX, int newY) {
+      let x = newX;
+      let y = newY;
+      return;
+   }
+
+   method int getColumn() {
+      return column;
+   }
+
+   method int getRow() {
+      return row;
+   }
+
+   method void setColumn(int x) {
+      let column = x;
+      return;
+   }
+
+   method void setRow(int y) {
+      let row = y;
+      return;
+   }
+
+   method void updateColumn(int x) {
+      let column = column + x;
+      return;
+   }
+
+   method void updateRow(int y) {
+      let row = row + y;
+      return;
+   }
+}

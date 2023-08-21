@@ -1,0 +1,635 @@
+class Tetris {
+
+    static Tetris instance; // a Tetris game instance
+    field int num, size, asize, leftWall, rightWall, columns, rows, score, state, time;
+    field int x0, scorex, bottom, wait, linesCompleted, level, border;
+    field boolean exit;     
+    field Array shapes;     // an array with an entry for each square in the Tetris grid
+
+    /** Constructs a new Tetris game with the given right wall, square size and number of columns. */
+    constructor Tetris new(int numColumns, int squareSize, int right, bool outline) {
+        let exit = false;
+        let size = squareSize;
+        let rightWall = right;
+        let columns = numColumns;
+        let leftWall = (rightWall - (size * columns)) + 1;
+        let linesCompleted = 0;
+        let rows = 256 / size;
+        if (outline) {
+            let border = 1;
+        }
+        else {
+            let border = 0;
+        }
+        let x0 = leftWall + ((columns / 2) * size);
+        let time = 0;
+        let scorex = ((leftWall / 8) - 14) / 2;
+        let bottom = 256 - size - (256 - (rows * size));
+        if (bottom & 1) {
+            let bottom = bottom - 1;
+        }
+
+        if (scorex < 0) {
+            if (((511 - rightWall) / 8) > 15) {
+                let scorex =  (rightWall / 8) + (((63 - (rightWall / 8)) - 14) / 2);
+            }
+            else {
+                if ((256 - bottom - size) < 11) {
+                    let bottom = bottom - size;
+                    let rows = rows - 1;
+                    let scorex = 1;
+                }
+                else {
+                    let scorex = 1;
+                }
+            }
+        }
+
+        let asize = rows * columns;
+        let shapes = Array.new(asize);
+
+        if (~(leftWall = 0)) {
+            do Screen.drawLine(leftWall - 1, 0, leftWall - 1, bottom + size - 1);
+        }
+
+        if (~(rightWall = 511)) {
+            do Screen.drawLine(rightWall + 1, 0, rightWall + 1, bottom + size - 1);
+        }
+
+        if (~((bottom + size) = 256)) {
+            do Screen.drawLine(leftWall, bottom + size - 1, rightWall, bottom + size - 1);
+        }
+
+        do Output.moveCursor(22, scorex);
+        do Output.printString("Score: 0");
+        do drawTetris();
+
+        do Output.moveCursor(10, (((leftWall + rightWall) / 2) / 8) - 6);
+        do Output.printString("Choose level ");
+        do Output.moveCursor(11, (((leftWall + rightWall) / 2) / 8) - 4);
+        let level = Keyboard.readInt("(1-20): ");
+        if (level < 1) {
+            let level = 1;
+        }
+        else {
+            if (level > 20) {
+                let level = 20;
+            }
+        }
+        do Output.moveCursor(11, (((leftWall + rightWall) / 2) / 8) + 5);
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+
+        let wait = 43 - (level * 2);
+        
+        do Output.moveCursor(10, (((leftWall + rightWall) / 2) / 8) - 6);
+        do Output.printChar(32);
+        do Output.printString("Press a key");
+        while (Keyboard.keyPressed() = 0) {
+            let time = time + 3;
+        }
+
+        let state = Keyboard.keyPressed();
+        let state = (((state) | (time)) & (~((state) & (time)))) + 1;
+
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+        do Output.backSpace();
+
+        do newNum();
+
+        return this;
+    }
+
+    /** Creates an instance of Tetris (if given valid values), and stores it. */
+    function void newInstance(int numColumns, int squareSize, int right, bool outline) {
+        if (right > 511) {
+            do Sys.error(7);
+            return;
+        }
+        if (((right - (squareSize * numColumns)) + 1) < 0) {
+            do Sys.error(7);
+            return;
+        }
+        let instance = Tetris.new(numColumns, squareSize, right, outline);
+        return;
+    }
+
+    /** Returns the instance of this Tetris game. */
+    function Tetris getInstance() {
+        return instance;
+    }
+
+    /** Starts and runs the game until the player loses*/
+    method void run() {
+        while (~(exit)) {
+            if (num = 1) {
+                if (Shape1.start(leftWall, rightWall, size, border, x0, bottom, wait) = 2) {
+                    let exit = true;
+                    let num = 0;
+                    do gameOver();
+                }
+                do Sys.wait(20);
+            }
+            if (num = 2) {
+                if (Shape2.start(leftWall, rightWall, size, border, x0, bottom, wait) = 2) {
+                    let exit = true;
+                    let num = 0;
+                    do gameOver();
+                }
+                do Sys.wait(20);
+            }
+
+            if (num = 3) {
+                if (Shape3.start(leftWall, rightWall, size, border, x0, bottom, wait) = 2) {
+                    let exit = true;
+                    let num = 0;
+                    do gameOver();
+                }
+                do Sys.wait(20);
+            }
+
+            if (num = 4) {
+                if (Shape4.start(leftWall, rightWall, size, border, x0, bottom, wait) = 2) {
+                    let exit = true;
+                    let num = 0;
+                    do gameOver();
+                }
+                do Sys.wait(20);
+            }
+            if (num = 5) {
+                if (Shape5.start(leftWall, rightWall, size, border, x0, bottom, wait) = 2) {
+                    let exit = true;
+                    let num = 0;
+                    do gameOver();
+                }
+                do Sys.wait(20);
+            }            
+            if (num = 6) {
+                if (Shape6.start(leftWall, rightWall, size, border, x0, bottom, wait) = 2) {
+                    let exit = true;
+                    let num = 0;
+                    do gameOver();
+                }
+                do Sys.wait(20);
+            }            
+            if (num = 7) {
+                if (Shape7.start(leftWall, rightWall, size, border, x0, bottom, wait) = 2) {
+                    let exit = true;
+                    let num = 0;
+                    do gameOver();
+                }
+                do Sys.wait(20);
+            }
+        }
+        return;
+    }
+
+    /** Returns the value of the shapes array at the appropriate index (as given by row and column). */
+    method int getIndex(int column, int row) {
+        return shapes[(row * columns) + column];
+    }
+
+    /** Changes the value appropriate index of the squares array (as given by row and column) from 0 to 1*/
+    method void addSquare(int column, int row) {
+        let shapes[(row * columns) + column] = 1;
+        return;
+    }
+
+    /** Changes the value appropriate index of the squares array (as given by row and column) from 1 to 0*/
+    method void deleteSquare(int column, int row) {
+        let shapes[(row * columns) + column] = 0;
+        return;
+    }
+
+    /** 
+        Checks the right of the given position and (numRows -1) rows down from there. 
+        vertical controls wheter it should also check up/down of the given position.
+        If rem is not 0 it will check 1 more row.
+        If there is already a square in any of the positions return 1, else return 0. 
+    */
+    method int getRight(int x, int y, int numRows, int vertical, int rem) {
+        var int index, i, row;
+        if (~(rem = 0)) {
+            let numRows = numRows + 1;
+        }
+
+        let index = ((y * columns) + x) + 1;
+        let row = 0;
+        let i = 0;
+
+        while (row < numRows) {
+            if (shapes[index + i] = 1) {
+                return 1;
+            }
+            let i = i + columns;
+            let row = row + 1;
+        }
+
+        if (vertical = 0) {
+            return 0;
+        }
+
+        if (vertical = 1) {
+            if (shapes[index - (columns + 1)] = 1) {
+                return 1;
+            }
+        }
+
+        if (vertical = 2) {
+            if (shapes[index + (columns - 1)] = 1) {
+                return 1;
+            }
+        }
+
+        if (vertical = 3) {
+            if ((shapes[index - (columns + 1)] = 1) | (shapes[index + (columns - 1)] = 1)) {
+                return 1;
+            }
+        }
+
+        return 0; 
+    }
+
+    /** 
+        Checks the left of the given position and (numRows -1) rows down from there. 
+        vertical controls wheter it should also check up/down of the given position.
+        If rem is not 0 it will check 1 more row.
+        If there is already a square in any of the positions return 1, else return 0. 
+    */
+    method int getLeft(int x, int y, int numRows, int vertical, int rem) {
+        var int index, i, row;
+        if (~(rem = 0)) {
+            let numRows = numRows + 1;
+        }
+
+        let index = ((y * columns) + x) - 1;
+        let row = 0;
+        let i = 0;
+
+        while (row < numRows) {
+            if (shapes[index + i] = 1) {
+                return 1;
+            }
+            let i = i + columns;
+            let row = row + 1;
+        }
+        if (vertical = 0) {
+            return 0;
+        }
+
+        if (vertical = 1) {
+            if (shapes[index - (columns - 1)] = 1) {
+                return 1;
+            }
+        }
+
+        if (vertical = 2) {
+            if (shapes[index + (columns + 1)] = 1) {
+                return 1;
+            }
+        }
+
+        if (vertical = 3) {
+            if ((shapes[index - (columns - 1)] = 1) | (shapes[index + (columns + 1)] = 1)) {
+                return 1;
+            }
+        }
+
+        return 0;    
+    }
+
+    /** 
+        Checks down of the given position and (numCols -1) rows right from there. 
+        horizontal controls wheter it should also check right/left of the given position.
+        If there is already a square in any of the positions return 1, else return 0. 
+    */
+    method int getDown(int x, int y, int numCols, int horizontal) {
+        var int index, i;
+        let index = ((y * columns) + x) + columns;
+        let i = 0;
+        while (i < numCols) {
+            if (shapes[index + i] = 1) {
+                return 1;
+            }
+            let i = i + 1;
+        }
+        if (horizontal = 0) {
+            return 0;
+        }
+
+        if (horizontal = 1) {
+            if (shapes[index - (columns + 1)] = 1) {
+                return 1;
+            }
+        }
+
+        if (horizontal = 2) {
+            if (shapes[index - (columns - 1)] = 1) {
+                return 1;
+            }
+        }
+
+        if (horizontal = 3) {
+            if ((shapes[index - (columns + 1)] = 1) | (shapes[index - (columns - 1)] = 1)) {
+                return 1;
+            }
+        }
+        return 0;       
+    }
+
+    /** If a row has been completed increses score, erases it from screen and deletes the corresponding squares from the array.
+        Increases level and speed every five rows completed. */
+    method int eraseLine(int row) {
+        var int index, i, y;
+        let i = 0;
+        let index = row * columns;
+        while (i < columns) {
+            if (shapes[index + i] = 0) {
+                return 0;
+            }
+            let i = i + 1;
+        }
+        let y = row * size;
+
+        do Screen.setColor(false);
+        do Screen.drawRectangle(leftWall, y, rightWall, y + (size - 1));
+        do Screen.setColor(true);
+        let i = 0;
+        while (i < columns) {
+            let shapes[index + i] = 0;
+            let i = i + 1;
+        }
+        let score = score + 300 + (level * level);
+        let linesCompleted = linesCompleted + 1;
+        if (linesCompleted = 5) {
+            if (wait > 5) {
+                let level = level + 1;
+                let wait = wait - 2;
+            }
+            let linesCompleted = 0;
+        }
+        do Output.moveCursor(22, scorex + 7);
+        do Output.printInt(score);
+        return 1;
+    }
+
+    /** Make all figures above the specified row go up 1 row (that is go down 1 row on screen)
+        If several rows were deleted it has to be called in ascending order of row number (that is descending order of position on screen) */
+    method void descend(int row) {
+        var int index, y, i, j;
+
+        if (row > (rows - 1)) {
+            let row = (rows - 1);
+        }
+
+        let index = row * columns;
+        let y = row * size;
+        do Screen.setColor(true);
+
+        while (~(index < columns)) {
+            let i = 0;
+            let j = 0;
+            while (i < columns) {
+                if (shapes[index + i - columns] = 1) {
+                    let shapes[index + i] = 1;
+                    let shapes[index + i - columns] = 0;
+                    do Screen.drawRectangle(leftWall + j + border, y + border, leftWall + j + size - 1 - border, y + size - 1 - border);
+                }
+                let i = i + 1;
+                let j = j + size;
+            }
+            let index = index - columns;
+            let y = y - size;
+            do Screen.setColor(false);
+            do Screen.drawRectangle(leftWall, y, rightWall, y + (size - 1));
+            do Screen.setColor(true);
+
+        }
+        return;
+    }
+
+    /** 
+        Called when a figure finishes going down. 
+        Increases score, gets a new num (which controls the next shape), handles the calling of eraseLine() and descend() appropiately.
+        Only calls descend for lines which were erased and does it in ascending order of row number 
+    */
+    method void linesDown(int a, int b, int c, int d)  {
+        var int i, j;
+        var Array squares;
+
+        do newNum();
+
+        let score = score + 8 + level;
+        do Output.moveCursor(22, scorex + 7);
+        do Output.printInt(score);
+
+        let squares = Array.new(8);
+
+        if (a > b) {
+            let squares[0] = b;
+            let squares[1] = eraseLine(b);
+            let squares[2] = a;
+            let squares[3] = eraseLine(a);
+        }
+        else { 
+            let squares[0] = a;
+            let squares[1] = eraseLine(a);
+            let squares[2] = b;
+            let squares[3] = eraseLine(b);      
+        }
+        if (c > d) {
+            let squares[4] = d;
+            let squares[5] = eraseLine(d);
+            let squares[6] = c;
+            let squares[7] = eraseLine(c);    
+        }
+        else { 
+            let squares[4] = c;
+            let squares[5] = eraseLine(c);
+            let squares[6] = d;
+            let squares[7] = eraseLine(d);         
+        }
+
+        let i = 0;
+        let j = 4;
+
+        while ((i < 4) & (j < 7)) {
+            if (squares[i] > squares[j]) {
+                if (squares[j + 1] = 1) {
+                    do descend(squares[j]);
+                }
+                let j = j + 2;
+            }
+            else { 
+                if (squares[i + 1] = 1) {
+                    do descend(squares[i]);
+                }                
+                let i = i + 2;
+            }
+        }
+
+        while (i < 4) {
+                if (squares[i + 1] = 1) {
+                    do descend(squares[i]);
+                }             
+                let i = i + 1;
+        }
+
+        while (j < 7) {
+                if (squares[j + 1] = 1) {
+                    do descend(squares[j]);
+                }             
+                let j = j + 1;
+        }
+        return;
+    }
+
+    method int getColumns() {
+        return columns;
+    }
+
+    /** Simple 16-bit XORShift to obtain a new state, sets num = state modulo 7 + 1 */
+    method void newNum() {
+
+        let state = ((state) | (state * 128)) & (~((state) & (state * 128)));
+        let state = ((state) | (state / 32)) & (~((state) & (state / 32)));
+        let state = ((state) | (state * 2048)) & (~((state) & (state * 2048)));
+
+        let num = Math.abs((state - ((state / 7 ) * 7))) + 1;
+        return;
+    }
+
+    /** Prints "Game Over" and score */
+    method void gameOver() {
+        do Output.moveCursor(10, (((leftWall + rightWall) / 2) / 8) - 4);
+        do Output.printString("Game Over");
+        do Output.moveCursor(12, (((leftWall + rightWall) / 2) / 8) - 5);
+        do Output.printString("Score: ");
+        do Output.printInt(score);
+        return;
+    }
+
+    /** Draws "TETRIS" on the left side of the screen if there is space, else it checks the right side, if there is no space it returns. */
+    method void drawTetris() {
+        var int x, y, i, size, next;
+        let i = 0;
+        let x = 17;
+        let y = 49;
+        let next = (leftWall - x) / 25;
+        let size = next - 2;
+        if (size < 0) {
+            let next = ((511 - rightWall + x) / 25) - 1;
+            let size = next - 2;
+            let x = rightWall + x;
+        }
+        if (size < 0) {
+            return;
+        }
+
+        // T
+        do Screen.drawRectangle(x - next, y, x + size - next, y + size);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        do Screen.drawRectangle(x + next, y, x + size + next, y + size);
+        do Screen.drawRectangle(x + next + next, y, x + size + next + next, y + size);
+        do Screen.drawRectangle(x + next + next + next, y, x + size + next + next + next, y + size);
+
+        do Screen.drawRectangle(x + next, y + next, x + size + next, y + size + next);
+        do Screen.drawRectangle(x + next, y + (next * 2), x + size + next, y + size + (next * 2));
+        do Screen.drawRectangle(x + next, y + (next * 3), x + size + next, y + size + (next * 3));
+        do Screen.drawRectangle(x + next, y + (next * 4), x + size + next, y + size + (next * 4));
+
+        // E
+        let x = x + (next * 5);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        do Screen.drawRectangle(x + next, y, x + size + next, y + size);
+        do Screen.drawRectangle(x + next + next, y, x + size + next + next, y + size);
+
+        do Screen.drawRectangle(x, y + next, x + size, y + size + next);
+        do Screen.drawRectangle(x, y + next + next, x + size, y + size + next + next);
+        do Screen.drawRectangle(x + next, y + next + next, x + size + next, y + size + next + next);
+        do Screen.drawRectangle(x + next + next, y + next + next, x + size + next + next, y + size + next + next);
+
+        do Screen.drawRectangle(x, y + (next * 3), x + size, y + size + (next * 3));
+        do Screen.drawRectangle(x, y + (next * 4), x + size, y + size + (next * 4));
+        do Screen.drawRectangle(x + next, y + (next * 4), x + size + next, y + size + (next * 4));
+        do Screen.drawRectangle(x + next + next, y + (next * 4), x + size + next + next, y + size + (next * 4));
+
+
+        // T
+        let x = x + (next * 5);
+        do Screen.drawRectangle(x - next, y, x + size - next, y + size);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        do Screen.drawRectangle(x + next, y, x + size + next, y + size);
+        do Screen.drawRectangle(x + next + next, y, x + size + next + next, y + size);
+        do Screen.drawRectangle(x + next + next + next, y, x + size + next + next + next, y + size);
+
+        do Screen.drawRectangle(x + next, y + next, x + size + next, y + size + next);
+        do Screen.drawRectangle(x + next, y + (next * 2), x + size + next, y + size + (next * 2));
+        do Screen.drawRectangle(x + next, y + (next * 3), x + size + next, y + size + (next * 3));
+        do Screen.drawRectangle(x + next, y + (next * 4), x + size + next, y + size + (next * 4));
+
+        // R
+        let x = x + (next * 5);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        do Screen.drawRectangle(x + next, y, x + size + next, y + size);
+        do Screen.drawRectangle(x + next + next, y, x + size + next + next, y + size);
+        do Screen.drawRectangle(x + next + next, y + next, x + size + next + next, y + size + next);
+        do Screen.drawRectangle(x + next, y + next + next, x + size + next, y + size + next + next);
+
+
+        do Screen.drawRectangle(x, y + next, x + size, y + size + next);
+        do Screen.drawRectangle(x, y + next + next, x + size, y + size + next + next);
+        do Screen.drawRectangle(x, y + (next * 3), x + size, y + size + (next * 3));
+        do Screen.drawRectangle(x, y + (next * 4), x + size, y + size + (next * 4));
+        do Screen.drawRectangle(x + next + next, y + (next * 3), x + size + next + next, y + size + (next * 3));
+        do Screen.drawRectangle(x + next + next, y + (next * 4), x + size + next + next, y + size + (next * 4));
+
+        // I
+        let x = x + (next * 4);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        do Screen.drawRectangle(x, y + next, x + size, y + size + next);
+        do Screen.drawRectangle(x, y + next + next, x + size, y + size + next + next);
+        do Screen.drawRectangle(x, y + (next * 3), x + size, y + size + (next * 3));
+        do Screen.drawRectangle(x, y + (next * 4), x + size, y + size + (next * 4));
+
+        // S
+        let x = x + (next * 2);
+        do Screen.drawRectangle(x, y, x + size, y + size);
+        do Screen.drawRectangle(x + next, y, x + size + next, y + size);
+        do Screen.drawRectangle(x + next + next, y, x + size + next + next, y + size);
+
+        do Screen.drawRectangle(x, y + next, x + size, y + size + next);
+        do Screen.drawRectangle(x, y + next + next, x + size, y + size + next + next);
+        do Screen.drawRectangle(x + next, y + next + next, x + size + next, y + size + next + next);
+        do Screen.drawRectangle(x + next + next, y + next + next, x + size + next + next, y + size + next + next);
+
+        do Screen.drawRectangle(x + next + next, y + (next * 3), x + size + next + next, y + size + (next * 3));
+        do Screen.drawRectangle(x + next + next, y + (next * 4), x + size + next + next, y + size + (next * 4));
+        do Screen.drawRectangle(x + next, y + (next * 4), x + size + next, y + size + (next * 4));
+        do Screen.drawRectangle(x, y + (next * 4), x + size, y + size + (next * 4));
+
+        return;
+    }
+
+    /** Deallocates the object's memory. */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}

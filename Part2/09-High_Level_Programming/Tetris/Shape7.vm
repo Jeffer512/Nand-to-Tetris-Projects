@@ -1,0 +1,1639 @@
+function Shape7.new 0
+push constant 13
+call Memory.alloc 1
+pop pointer 0
+call Tetris.getInstance 0
+pop static 0
+push argument 2
+pop this 1
+push argument 0
+pop this 3
+push argument 1
+push this 1
+sub
+push constant 1
+add
+pop this 4
+push constant 0
+pop this 2
+push constant 0
+pop this 0
+push argument 5
+pop this 5
+push this 5
+push this 1
+call Math.divide 2
+pop this 6
+push argument 6
+pop this 7
+push argument 4
+push constant 0
+push this 1
+push this 3
+push argument 3
+call Square.new 5
+pop this 8
+push argument 4
+push this 1
+push this 1
+push this 3
+push argument 3
+call Square.new 5
+pop this 9
+push argument 4
+push this 1
+push this 1
+add
+push this 1
+push this 3
+push argument 3
+call Square.new 5
+pop this 10
+push argument 4
+push this 1
+add
+push this 1
+push this 1
+add
+push this 1
+push this 3
+push argument 3
+call Square.new 5
+pop this 11
+push this 10
+pop this 12
+push pointer 0
+return
+function Shape7.start 1
+push argument 0
+push argument 1
+push argument 2
+push argument 3
+push argument 4
+push argument 5
+push argument 6
+call Shape7.new 7
+pop static 1
+push static 1
+call Shape7.checkLose 1
+push constant 1
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 2
+return
+label IF_FALSE0
+push static 1
+call Shape7.move 1
+pop local 0
+push static 1
+call Shape7.dispose 1
+pop temp 0
+push local 0
+return
+function Shape7.move 2
+push argument 0
+pop pointer 0
+label WHILE_EXP0
+push constant 1
+push constant 1
+eq
+not
+if-goto WHILE_END0
+push constant 0
+pop local 1
+label WHILE_EXP1
+push local 1
+push constant 2
+lt
+not
+if-goto WHILE_END1
+call Keyboard.keyPressed 0
+pop local 0
+push local 0
+push constant 132
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push pointer 0
+call Shape7.moveRight 1
+pop temp 0
+push constant 100
+call Sys.wait 1
+pop temp 0
+label IF_FALSE0
+push local 0
+push constant 130
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push pointer 0
+call Shape7.moveLeft 1
+pop temp 0
+push constant 100
+call Sys.wait 1
+pop temp 0
+label IF_FALSE1
+push local 0
+push constant 131
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push pointer 0
+call Shape7.rotate 1
+pop temp 0
+push constant 100
+call Sys.wait 1
+pop temp 0
+label IF_FALSE2
+push local 0
+push constant 133
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+label WHILE_EXP2
+call Keyboard.keyPressed 0
+push constant 133
+eq
+push pointer 0
+call Shape7.moveDown 1
+push constant 0
+eq
+and
+not
+if-goto WHILE_END2
+push constant 7
+call Sys.wait 1
+pop temp 0
+goto WHILE_EXP2
+label WHILE_END2
+label IF_FALSE3
+push local 0
+push constant 32
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+label WHILE_EXP3
+push pointer 0
+call Shape7.moveDown 1
+push constant 0
+eq
+not
+if-goto WHILE_END3
+goto WHILE_EXP3
+label WHILE_END3
+label WHILE_EXP4
+call Keyboard.keyPressed 0
+push constant 0
+eq
+not
+not
+if-goto WHILE_END4
+goto WHILE_EXP4
+label WHILE_END4
+label IF_FALSE4
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP1
+label WHILE_END1
+push pointer 0
+call Shape7.moveDown 1
+push constant 1
+eq
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+label WHILE_EXP5
+push local 1
+push constant 20
+lt
+call Keyboard.keyPressed 0
+push constant 130
+eq
+call Keyboard.keyPressed 0
+push constant 131
+eq
+or
+call Keyboard.keyPressed 0
+push constant 132
+eq
+or
+and
+not
+if-goto WHILE_END5
+call Keyboard.keyPressed 0
+push constant 132
+eq
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push pointer 0
+call Shape7.moveRight 1
+pop temp 0
+push constant 100
+call Sys.wait 1
+pop temp 0
+label IF_FALSE6
+call Keyboard.keyPressed 0
+push constant 130
+eq
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push pointer 0
+call Shape7.moveLeft 1
+pop temp 0
+push constant 100
+call Sys.wait 1
+pop temp 0
+label IF_FALSE7
+call Keyboard.keyPressed 0
+push constant 131
+eq
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
+push pointer 0
+call Shape7.rotate 1
+pop temp 0
+push constant 100
+call Sys.wait 1
+pop temp 0
+label IF_FALSE8
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_EXP5
+label WHILE_END5
+push pointer 0
+call Shape7.moveDown 1
+push constant 1
+eq
+if-goto IF_TRUE9
+goto IF_FALSE9
+label IF_TRUE9
+push static 0
+push this 8
+call Square.getColumn 1
+push this 8
+call Square.getRow 1
+call Tetris.addSquare 3
+pop temp 0
+push static 0
+push this 9
+call Square.getColumn 1
+push this 9
+call Square.getRow 1
+call Tetris.addSquare 3
+pop temp 0
+push static 0
+push this 10
+call Square.getColumn 1
+push this 10
+call Square.getRow 1
+call Tetris.addSquare 3
+pop temp 0
+push static 0
+push this 11
+call Square.getColumn 1
+push this 11
+call Square.getRow 1
+call Tetris.addSquare 3
+pop temp 0
+push static 0
+push this 8
+call Square.getRow 1
+push this 9
+call Square.getRow 1
+push this 10
+call Square.getRow 1
+push this 11
+call Square.getRow 1
+call Tetris.linesDown 5
+pop temp 0
+push constant 1
+return
+label IF_FALSE9
+label IF_FALSE5
+push this 7
+call Sys.wait 1
+pop temp 0
+goto WHILE_EXP0
+label WHILE_END0
+push constant 0
+return
+function Shape7.moveRight 0
+push argument 0
+pop pointer 0
+push this 8
+call Square.getX 1
+push this 4
+eq
+push this 9
+call Square.getX 1
+push this 4
+eq
+or
+push this 10
+call Square.getX 1
+push this 4
+eq
+or
+push this 11
+call Square.getX 1
+push this 4
+eq
+or
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+return
+label IF_FALSE0
+push this 2
+push constant 1
+eq
+push this 2
+push constant 3
+eq
+or
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push this 2
+push constant 1
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push static 0
+push this 8
+call Square.getColumn 1
+push this 8
+call Square.getRow 1
+push constant 1
+push constant 0
+push this 0
+call Tetris.getRight 6
+push constant 1
+eq
+push static 0
+push this 11
+call Square.getColumn 1
+push this 11
+call Square.getRow 1
+push constant 1
+push constant 0
+push this 0
+call Tetris.getRight 6
+push constant 1
+eq
+or
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 0
+return
+label IF_FALSE3
+goto IF_END2
+label IF_FALSE2
+push static 0
+push this 11
+call Square.getColumn 1
+push this 11
+call Square.getRow 1
+push constant 2
+push constant 0
+push this 0
+call Tetris.getRight 6
+push constant 1
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push constant 0
+return
+label IF_FALSE4
+label IF_END2
+goto IF_END1
+label IF_FALSE1
+push this 2
+push constant 0
+eq
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push static 0
+push this 8
+call Square.getColumn 1
+push this 8
+call Square.getRow 1
+push constant 2
+push constant 0
+push constant 0
+call Tetris.getRight 6
+push constant 1
+eq
+push static 0
+push this 11
+call Square.getColumn 1
+push this 11
+call Square.getRow 1
+push constant 1
+push constant 0
+push this 0
+call Tetris.getRight 6
+push constant 1
+eq
+or
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push constant 0
+return
+label IF_FALSE6
+goto IF_END5
+label IF_FALSE5
+push static 0
+push this 10
+call Square.getColumn 1
+push this 10
+call Square.getRow 1
+push constant 3
+push constant 0
+push this 0
+call Tetris.getRight 6
+push constant 1
+eq
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push constant 0
+return
+label IF_FALSE7
+label IF_END5
+label IF_END1
+push this 8
+call Square.erase 1
+pop temp 0
+push this 9
+call Square.erase 1
+pop temp 0
+push this 10
+call Square.erase 1
+pop temp 0
+push this 11
+call Square.erase 1
+pop temp 0
+push this 8
+push this 8
+call Square.getX 1
+push this 1
+add
+push this 8
+call Square.getY 1
+call Square.setLoc 3
+pop temp 0
+push this 9
+push this 9
+call Square.getX 1
+push this 1
+add
+push this 9
+call Square.getY 1
+call Square.setLoc 3
+pop temp 0
+push this 10
+push this 10
+call Square.getX 1
+push this 1
+add
+push this 10
+call Square.getY 1
+call Square.setLoc 3
+pop temp 0
+push this 11
+push this 11
+call Square.getX 1
+push this 1
+add
+push this 11
+call Square.getY 1
+call Square.setLoc 3
+pop temp 0
+push this 8
+call Square.draw 1
+pop temp 0
+push this 9
+call Square.draw 1
+pop temp 0
+push this 10
+call Square.draw 1
+pop temp 0
+push this 11
+call Square.draw 1
+pop temp 0
+push this 8
+push constant 1
+call Square.updateColumn 2
+pop temp 0
+push this 9
+push constant 1
+call Square.updateColumn 2
+pop temp 0
+push this 10
+push constant 1
+call Square.updateColumn 2
+pop temp 0
+push this 11
+push constant 1
+call Square.updateColumn 2
+pop temp 0
+push constant 0
+return
+function Shape7.moveLeft 1
+push argument 0
+pop pointer 0
+push this 8
+call Square.getX 1
+push this 3
+eq
+push this 9
+call Square.getX 1
+push this 3
+eq
+or
+push this 10
+call Square.getX 1
+push this 3
+eq
+or
+push this 11
+call Square.getX 1
+push this 3
+eq
+or
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+return
+label IF_FALSE0
+push this 2
+push constant 1
+eq
+push this 2
+push constant 3
+eq
+or
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push this 2
+push constant 1
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push static 0
+push this 10
+call Square.getColumn 1
+push this 10
+call Square.getRow 1
+push constant 2
+push constant 0
+push this 0
+call Tetris.getLeft 6
+push constant 1
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 0
+return
+label IF_FALSE3
+goto IF_END2
+label IF_FALSE2
+push static 0
+push this 8
+call Square.getColumn 1
+push this 8
+call Square.getRow 1
+push constant 1
+push constant 0
+push this 0
+call Tetris.getLeft 6
+push constant 1
+eq
+push static 0
+push this 11
+call Square.getColumn 1
+push this 11
+call Square.getRow 1
+push constant 1
+push constant 0
+push this 0
+call Tetris.getLeft 6
+push constant 1
+eq
+or
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push constant 0
+return
+label IF_FALSE4
+label IF_END2
+goto IF_END1
+label IF_FALSE1
+push this 2
+push constant 0
+eq
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push static 0
+push this 8
+call Square.getColumn 1
+push this 8
+call Square.getRow 1
+push constant 3
+push constant 0
+push this 0
+call Tetris.getLeft 6
+push constant 1
+eq
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push constant 0
+return
+label IF_FALSE6
+goto IF_END5
+label IF_FALSE5
+push static 0
+push this 9
+call Square.getColumn 1
+push this 9
+call Square.getRow 1
+push constant 2
+push constant 0
+push this 0
+call Tetris.getLeft 6
+push constant 1
+eq
+push static 0
+push this 11
+call Square.getColumn 1
+push this 11
+call Square.getRow 1
+push constant 1
+push constant 0
+push this 0
+call Tetris.getLeft 6
+push constant 1
+eq
+or
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push constant 0
+return
+label IF_FALSE7
+label IF_END5
+label IF_END1
+push this 8
+call Square.erase 1
+pop temp 0
+push this 9
+call Square.erase 1
+pop temp 0
+push this 10
+call Square.erase 1
+pop temp 0
+push this 11
+call Square.erase 1
+pop temp 0
+push this 8
+push this 8
+call Square.getX 1
+push this 1
+sub
+push this 8
+call Square.getY 1
+call Square.setLoc 3
+pop temp 0
+push this 9
+push this 9
+call Square.getX 1
+push this 1
+sub
+push this 9
+call Square.getY 1
+call Square.setLoc 3
+pop temp 0
+push this 10
+push this 10
+call Square.getX 1
+push this 1
+sub
+push this 10
+call Square.getY 1
+call Square.setLoc 3
+pop temp 0
+push this 11
+push this 11
+call Square.getX 1
+push this 1
+sub
+push this 11
+call Square.getY 1
+call Square.setLoc 3
+pop temp 0
+push this 8
+call Square.draw 1
+pop temp 0
+push this 9
+call Square.draw 1
+pop temp 0
+push this 10
+call Square.draw 1
+pop temp 0
+push this 11
+call Square.draw 1
+pop temp 0
+push this 8
+push constant 1
+neg
+call Square.updateColumn 2
+pop temp 0
+push this 9
+push constant 1
+neg
+call Square.updateColumn 2
+pop temp 0
+push this 10
+push constant 1
+neg
+call Square.updateColumn 2
+pop temp 0
+push this 11
+push constant 1
+neg
+call Square.updateColumn 2
+pop temp 0
+push constant 0
+return
+function Shape7.moveDown 0
+push argument 0
+pop pointer 0
+push this 8
+call Square.getY 1
+push this 5
+eq
+push this 9
+call Square.getY 1
+push this 5
+eq
+or
+push this 10
+call Square.getY 1
+push this 5
+eq
+or
+push this 11
+call Square.getY 1
+push this 5
+eq
+or
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 1
+return
+label IF_FALSE0
+push this 2
+push constant 1
+eq
+push this 2
+push constant 3
+eq
+or
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push this 2
+push constant 1
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push static 0
+push this 11
+call Square.getColumn 1
+push this 11
+call Square.getRow 1
+push constant 1
+push constant 0
+call Tetris.getDown 5
+push constant 1
+eq
+push static 0
+push this 9
+call Square.getColumn 1
+push this 9
+call Square.getRow 1
+push constant 2
+push constant 0
+call Tetris.getDown 5
+push constant 1
+eq
+or
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 1
+return
+label IF_FALSE3
+goto IF_END2
+label IF_FALSE2
+push static 0
+push this 8
+call Square.getColumn 1
+push this 8
+call Square.getRow 1
+push constant 3
+push constant 0
+call Tetris.getDown 5
+push constant 1
+eq
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push constant 1
+return
+label IF_FALSE4
+label IF_END2
+goto IF_END1
+label IF_FALSE1
+push this 2
+push constant 0
+eq
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push static 0
+push this 10
+call Square.getColumn 1
+push this 10
+call Square.getRow 1
+push constant 2
+push constant 0
+call Tetris.getDown 5
+push constant 1
+eq
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push constant 1
+return
+label IF_FALSE6
+goto IF_END5
+label IF_FALSE5
+push static 0
+push this 8
+call Square.getColumn 1
+push this 8
+call Square.getRow 1
+push constant 1
+push constant 0
+call Tetris.getDown 5
+push constant 1
+eq
+push static 0
+push this 11
+call Square.getColumn 1
+push this 11
+call Square.getRow 1
+push constant 1
+push constant 0
+call Tetris.getDown 5
+push constant 1
+eq
+or
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push constant 1
+return
+label IF_FALSE7
+label IF_END5
+label IF_END1
+push this 8
+call Square.erase 1
+pop temp 0
+push this 9
+call Square.erase 1
+pop temp 0
+push this 10
+call Square.erase 1
+pop temp 0
+push this 11
+call Square.erase 1
+pop temp 0
+push this 8
+push this 8
+call Square.getX 1
+push this 8
+call Square.getY 1
+push constant 2
+add
+call Square.setLoc 3
+pop temp 0
+push this 9
+push this 9
+call Square.getX 1
+push this 9
+call Square.getY 1
+push constant 2
+add
+call Square.setLoc 3
+pop temp 0
+push this 10
+push this 10
+call Square.getX 1
+push this 10
+call Square.getY 1
+push constant 2
+add
+call Square.setLoc 3
+pop temp 0
+push this 11
+push this 11
+call Square.getX 1
+push this 11
+call Square.getY 1
+push constant 2
+add
+call Square.setLoc 3
+pop temp 0
+push this 8
+call Square.draw 1
+pop temp 0
+push this 9
+call Square.draw 1
+pop temp 0
+push this 10
+call Square.draw 1
+pop temp 0
+push this 11
+call Square.draw 1
+pop temp 0
+push this 0
+push this 1
+push constant 2
+sub
+eq
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
+push this 8
+push constant 1
+call Square.updateRow 2
+pop temp 0
+push this 9
+push constant 1
+call Square.updateRow 2
+pop temp 0
+push this 10
+push constant 1
+call Square.updateRow 2
+pop temp 0
+push this 11
+push constant 1
+call Square.updateRow 2
+pop temp 0
+push constant 0
+pop this 0
+goto IF_END8
+label IF_FALSE8
+push this 0
+push constant 2
+add
+pop this 0
+label IF_END8
+push constant 0
+return
+function Shape7.rotate 8
+push argument 0
+pop pointer 0
+push this 12
+call Square.getColumn 1
+push this 8
+call Square.getRow 1
+push this 12
+call Square.getRow 1
+sub
+sub
+pop local 0
+push this 12
+call Square.getRow 1
+push this 8
+call Square.getColumn 1
+push this 12
+call Square.getColumn 1
+sub
+add
+pop local 1
+push this 12
+call Square.getColumn 1
+push this 9
+call Square.getRow 1
+push this 12
+call Square.getRow 1
+sub
+sub
+pop local 2
+push this 12
+call Square.getRow 1
+push this 9
+call Square.getColumn 1
+push this 12
+call Square.getColumn 1
+sub
+add
+pop local 3
+push this 12
+call Square.getColumn 1
+push this 10
+call Square.getRow 1
+push this 12
+call Square.getRow 1
+sub
+sub
+pop local 4
+push this 12
+call Square.getRow 1
+push this 10
+call Square.getColumn 1
+push this 12
+call Square.getColumn 1
+sub
+add
+pop local 5
+push this 12
+call Square.getColumn 1
+push this 11
+call Square.getRow 1
+push this 12
+call Square.getRow 1
+sub
+sub
+pop local 6
+push this 12
+call Square.getRow 1
+push this 11
+call Square.getColumn 1
+push this 12
+call Square.getColumn 1
+sub
+add
+pop local 7
+push local 0
+push static 0
+call Tetris.getColumns 1
+push constant 1
+sub
+gt
+push local 0
+push constant 0
+lt
+or
+push local 1
+push this 6
+gt
+or
+push local 1
+push this 6
+eq
+push this 0
+push constant 0
+gt
+and
+or
+push local 2
+push static 0
+call Tetris.getColumns 1
+push constant 1
+sub
+gt
+or
+push local 2
+push constant 0
+lt
+or
+push local 3
+push this 6
+gt
+or
+push local 3
+push this 6
+eq
+push this 0
+push constant 0
+gt
+and
+or
+push local 4
+push static 0
+call Tetris.getColumns 1
+push constant 1
+sub
+gt
+or
+push local 4
+push constant 0
+lt
+or
+push local 5
+push this 6
+gt
+or
+push local 5
+push this 6
+eq
+push this 0
+push constant 0
+gt
+and
+or
+push local 6
+push static 0
+call Tetris.getColumns 1
+push constant 1
+sub
+gt
+or
+push local 6
+push constant 0
+lt
+or
+push local 7
+push this 6
+gt
+or
+push local 7
+push this 6
+eq
+push this 0
+push constant 0
+gt
+and
+or
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+return
+label IF_FALSE0
+push static 0
+push local 0
+push local 1
+call Tetris.getIndex 3
+push constant 1
+eq
+push static 0
+push local 2
+push local 3
+call Tetris.getIndex 3
+push constant 1
+eq
+or
+push static 0
+push local 4
+push local 5
+call Tetris.getIndex 3
+push constant 1
+eq
+or
+push static 0
+push local 6
+push local 7
+call Tetris.getIndex 3
+push constant 1
+eq
+or
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+push constant 0
+return
+label IF_FALSE1
+push local 2
+push local 0
+eq
+push local 3
+push local 1
+push constant 1
+add
+eq
+and
+push local 4
+push local 0
+eq
+push local 5
+push local 1
+push constant 1
+add
+eq
+and
+or
+push local 6
+push local 0
+eq
+push local 7
+push local 1
+push constant 1
+add
+eq
+and
+or
+not
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+push static 0
+push local 0
+push local 1
+push constant 1
+add
+call Tetris.getIndex 3
+push constant 1
+eq
+if-goto IF_TRUE3
+goto IF_FALSE3
+label IF_TRUE3
+push constant 0
+return
+label IF_FALSE3
+label IF_FALSE2
+push local 0
+push local 2
+eq
+push local 1
+push local 3
+push constant 1
+add
+eq
+and
+push local 4
+push local 2
+eq
+push local 5
+push local 3
+push constant 1
+add
+eq
+and
+or
+push local 6
+push local 2
+eq
+push local 7
+push local 3
+push constant 1
+add
+eq
+and
+or
+not
+if-goto IF_TRUE4
+goto IF_FALSE4
+label IF_TRUE4
+push static 0
+push local 2
+push local 3
+push constant 1
+add
+call Tetris.getIndex 3
+push constant 1
+eq
+if-goto IF_TRUE5
+goto IF_FALSE5
+label IF_TRUE5
+push constant 0
+return
+label IF_FALSE5
+label IF_FALSE4
+push local 0
+push local 4
+eq
+push local 1
+push local 5
+push constant 1
+add
+eq
+and
+push local 2
+push local 4
+eq
+push local 3
+push local 5
+push constant 1
+add
+eq
+and
+or
+push local 6
+push local 4
+eq
+push local 7
+push local 5
+push constant 1
+add
+eq
+and
+or
+not
+if-goto IF_TRUE6
+goto IF_FALSE6
+label IF_TRUE6
+push static 0
+push local 4
+push local 5
+push constant 1
+add
+call Tetris.getIndex 3
+push constant 1
+eq
+if-goto IF_TRUE7
+goto IF_FALSE7
+label IF_TRUE7
+push constant 0
+return
+label IF_FALSE7
+label IF_FALSE6
+push local 0
+push local 6
+eq
+push local 1
+push local 7
+push constant 1
+add
+eq
+and
+push local 2
+push local 6
+eq
+push local 3
+push local 7
+push constant 1
+add
+eq
+and
+or
+push local 4
+push local 0
+eq
+push local 4
+push local 7
+push constant 1
+add
+eq
+and
+or
+not
+if-goto IF_TRUE8
+goto IF_FALSE8
+label IF_TRUE8
+push static 0
+push local 6
+push local 7
+push constant 1
+add
+call Tetris.getIndex 3
+push constant 1
+eq
+if-goto IF_TRUE9
+goto IF_FALSE9
+label IF_TRUE9
+push constant 0
+return
+label IF_FALSE9
+label IF_FALSE8
+push this 8
+call Square.erase 1
+pop temp 0
+push this 9
+call Square.erase 1
+pop temp 0
+push this 10
+call Square.erase 1
+pop temp 0
+push this 11
+call Square.erase 1
+pop temp 0
+push this 8
+push this 3
+push local 0
+push this 1
+call Math.multiply 2
+add
+push local 1
+push this 1
+call Math.multiply 2
+push this 0
+add
+call Square.setLoc 3
+pop temp 0
+push this 9
+push this 3
+push local 2
+push this 1
+call Math.multiply 2
+add
+push local 3
+push this 1
+call Math.multiply 2
+push this 0
+add
+call Square.setLoc 3
+pop temp 0
+push this 10
+push this 3
+push local 4
+push this 1
+call Math.multiply 2
+add
+push local 5
+push this 1
+call Math.multiply 2
+push this 0
+add
+call Square.setLoc 3
+pop temp 0
+push this 11
+push this 3
+push local 6
+push this 1
+call Math.multiply 2
+add
+push local 7
+push this 1
+call Math.multiply 2
+push this 0
+add
+call Square.setLoc 3
+pop temp 0
+push this 8
+push local 0
+call Square.setColumn 2
+pop temp 0
+push this 8
+push local 1
+call Square.setRow 2
+pop temp 0
+push this 9
+push local 2
+call Square.setColumn 2
+pop temp 0
+push this 9
+push local 3
+call Square.setRow 2
+pop temp 0
+push this 10
+push local 4
+call Square.setColumn 2
+pop temp 0
+push this 10
+push local 5
+call Square.setRow 2
+pop temp 0
+push this 11
+push local 6
+call Square.setColumn 2
+pop temp 0
+push this 11
+push local 7
+call Square.setRow 2
+pop temp 0
+push this 8
+call Square.draw 1
+pop temp 0
+push this 9
+call Square.draw 1
+pop temp 0
+push this 10
+call Square.draw 1
+pop temp 0
+push this 11
+call Square.draw 1
+pop temp 0
+push this 2
+push constant 3
+eq
+if-goto IF_TRUE10
+goto IF_FALSE10
+label IF_TRUE10
+push constant 0
+pop this 2
+goto IF_END10
+label IF_FALSE10
+push this 2
+push constant 1
+add
+pop this 2
+label IF_END10
+push this 12
+push this 9
+eq
+if-goto IF_TRUE11
+goto IF_FALSE11
+label IF_TRUE11
+push this 10
+pop this 12
+goto IF_END11
+label IF_FALSE11
+push this 9
+pop this 12
+label IF_END11
+push constant 0
+return
+function Shape7.dispose 0
+push argument 0
+pop pointer 0
+push this 8
+call Square.dispose 1
+pop temp 0
+push this 9
+call Square.dispose 1
+pop temp 0
+push this 10
+call Square.dispose 1
+pop temp 0
+push this 11
+call Square.dispose 1
+pop temp 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return
+function Shape7.checkLose 0
+push argument 0
+pop pointer 0
+push static 0
+push this 8
+call Square.getColumn 1
+push this 8
+call Square.getRow 1
+call Tetris.getIndex 3
+push constant 1
+eq
+push static 0
+push this 9
+call Square.getColumn 1
+push this 9
+call Square.getRow 1
+call Tetris.getIndex 3
+push constant 1
+eq
+or
+push static 0
+push this 10
+call Square.getColumn 1
+push this 10
+call Square.getRow 1
+call Tetris.getIndex 3
+push constant 1
+eq
+or
+push static 0
+push this 11
+call Square.getColumn 1
+push this 11
+call Square.getRow 1
+call Tetris.getIndex 3
+push constant 1
+eq
+or
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push static 1
+call Shape7.dispose 1
+pop temp 0
+push constant 1
+return
+label IF_FALSE0
+push constant 0
+return

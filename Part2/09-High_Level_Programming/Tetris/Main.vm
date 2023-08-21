@@ -1,0 +1,17 @@
+function Main.main 1
+push constant 11
+push constant 16
+push constant 511
+push constant 1
+call Tetris.newInstance 4
+pop temp 0
+call Tetris.getInstance 0
+pop local 0
+push local 0
+call Tetris.run 1
+pop temp 0
+push local 0
+call Tetris.dispose 1
+pop temp 0
+push constant 0
+return

@@ -1,0 +1,179 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Math.jack
+
+/**
+ * A library of commonly used mathematical functions.
+ * Note: Jack compilers implement multiplication and division using OS method calls.
+ */
+class Math {
+    static array bits;
+    static int div;
+
+    /** Initializes the library. */
+    function void init() {
+        let bits = Array.new(16);
+        let bits[0] = 1;
+        let bits[1] = 2;
+        let bits[2] = 4;
+        let bits[3] = 8;
+        let bits[4] = 16;
+        let bits[5] = 32;
+        let bits[6] = 64;
+        let bits[7] = 128;
+        let bits[8] = 256;
+        let bits[9] = 512;
+        let bits[10] = 1024;
+        let bits[11] = 2048;
+        let bits[12] = 4096;
+        let bits[13] = 8192;
+        let bits[14] = 16384;
+        let bits[15] = ~32767;
+        let bits[16] = 0;
+        return;
+    }
+
+    /** Returns the absolute value of x. */
+    function int abs(int x) {
+        if (x < 0) {
+            return -x;
+        }
+        else {
+            return x;
+        }
+    }
+
+    /** Returns the product of x and y. 
+     *  When a Jack compiler detects the multiplication operator '*' in the 
+     *  program's code, it handles it by invoking this method. In other words,
+     *  the Jack expressions x*y and multiply(x,y) return the same value.
+     */
+    function int multiply(int x, int y) {
+        var int shiftedX, result, i;
+        var boolean neg;
+        let result = 0;
+        let neg = ((x < 0) | (y < 0)) & ((x > 0) | (y > 0));
+        let x = Math.abs(x);
+        let y = Math.abs(y);
+        if (y > x) {
+            let i = x;
+            let x = y;
+            let y = i;
+        }
+        let i = 0;
+        let shiftedX = x;
+        while (~(y < bits[i])) {
+            if (y & bits[i]) {
+                let result = result + shiftedX;
+            }
+            let shiftedX = shiftedX + shiftedX;
+            let i = i + 1;
+        }
+        if (neg) {
+            return -result;
+        }
+        return result;
+    }
+
+    /** Returns the integer part of x/y.
+     *  When a Jack compiler detects the multiplication operator '/' in the 
+     *  program's code, it handles it by invoking this method. In other words,
+     *  the Jack expressions x/y and divide(x,y) return the same value.
+     */
+    function int divide(int x, int y) {
+        var int q;
+        var boolean neg;
+        let neg = (((x < 0) | (y < 0)) & ((x > 0) | (y > 0)));
+        let x = Math.abs(x);
+        let y = Math.abs(y);
+
+        if (y = 1) {
+            if (neg) {
+                return -x;
+            }
+            return x;
+        }
+        let q = y + y;
+        if ((q > x) | (q < y)) {
+            let q = 0;
+            let div = x;
+        }
+        else {
+            let q = Math.divide(x, q);
+        }
+        if (div < y) {
+            if (neg) {
+                let q = -q;
+            }
+            return q + q;
+        }
+        else {
+            let div = div - y;
+            if (neg) {
+                return -((q + q) + 1);
+            }
+            else {
+                return (q + q) + 1;
+            }
+        }
+    }
+
+    /** Returns the integer part of the square root of x. */
+    function int sqrt(int x) {
+        var int estimate, i, guess;
+        let estimate = 0;
+        let i = 7;
+        while (i > (-1)) {
+            let guess = (estimate + bits[i]) * (estimate + bits[i]);
+            if ((~(guess > x)) & (guess > 0)) {
+                let estimate = estimate + bits[i];
+            }
+            let i = i - 1;
+        }
+        return estimate;
+    }
+
+    /** Returns the greater number. */
+    function int max(int a, int b) {
+        if (a < b) {
+            return b;
+        }
+        else {
+            return a;
+        }
+    }
+
+    /** Returns the smaller number. */
+    function int min(int a, int b) {
+        if (a > b) {
+            return b;
+        }
+        else {
+            return a;
+        }
+    }
+    function int getBit(int x) {
+        return bits[x];
+    }
+    function int getMostBit(int x) {
+        var int mid, high, low;
+        let mid = 7;
+        let high = 15;
+        let low = 0;
+        while (1 = 1) {
+            if ((high = mid) | (low = mid) | (x = bits[mid])) {
+                return mid;
+            }
+            if (x < bits[mid]) {
+                let high = mid;
+                let mid = (low + mid) / 2;
+            }
+            else {
+                let low = mid;
+                let mid = (high + mid) / 2;
+            }   
+        }
+        return 0;
+    }
+}
